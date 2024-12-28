@@ -3,6 +3,9 @@
 
 using namespace std;
 
+    int vida_jugador, ancho, alto, cantidad_objetos, posicion_x, posicion_y, cantidad_movimientos;
+    char objetos, movimientos;
+
     int m00, m01, m02, m03, m04, m05, m06, m07, m08, m09;
     int m10, m11, m12, m13, m14, m15, m16, m17, m18, m19;
     int m20, m21, m22, m23, m24, m25, m26, m27, m28, m29;
@@ -224,7 +227,9 @@ using namespace std;
         if(ancho == 9 && alto == 8)
         return m98;
         if(ancho == 9 && alto == 9)
-        return m99;      
+        return m99; 
+
+      return -1;     
     }
 
 int laberinto_modificar(int i, int j, int valor_nuevo){
@@ -437,23 +442,90 @@ int laberinto_modificar(int i, int j, int valor_nuevo){
          m98 = valor_nuevo;
         if(i == 9 && j == 9)
          m99 = valor_nuevo;
+      return -1;
+}
+
+int movimiento_jugador(char movimiento){
+  int x, y;
+  if(movimiento =='w'){
+    laberinto_modificar(x, y++, 1);
+         if(movimiento=='T'){
+         }
+         else if(movimiento=='X'){
+         }
+         else if(movimiento=='P'){
+         }
+         else if(movimiento=='#'){
+         }
+         else if(movimiento=='S'){
+         }
+  }
+
+  else if(movimiento =='s'){
+    laberinto_modificar(x, y--, 1);
+         if(movimiento=='T'){
+         }
+         else if(movimiento=='X'){
+         }
+         else if(movimiento=='P'){
+         }
+         else if(movimiento=='#'){
+         }
+         else if(movimiento=='S'){
+         }
+  }
+
+  else if(movimiento =='a'){
+    laberinto_modificar(x--, y, 1);         
+         if(movimiento=='T'){
+         }
+         else if(movimiento=='X'){
+         }
+         else if(movimiento=='P'){
+         }
+         else if(movimiento=='#'){
+         }
+         else if(movimiento=='S'){
+         }
+  }
+
+  else if(movimiento == 'd'){
+    laberinto_modificar(x++, y, 1);
+         if(movimiento=='T'){
+         }
+         else if(movimiento=='X'){
+         }
+         else if(movimiento=='P'){
+         }
+         else if(movimiento=='#'){
+         }
+         else if(movimiento=='S'){
+         }
+  } 
+  return -1; //indicando que el movimiento es invalido
 }
 
 int main(){
-    int vida_jugador, ancho, alto, cantidad_objetos, posicion_x, posicion_y;
-    char objetos, E, S, T, X, camino, muro, P;
 
     cin>>vida_jugador;
-    cin>>ancho;cin>>alto;
-    cin>>cantidad_objetos;
+    cin>> ancho >> alto;
 
-    for(int i=0; i<9; i++)
-      for(int j=0; j<9; j++){
-        cin>>objetos;
-        laberinto_modificar(i,j,objetos);
-      }
+    cin>>cantidad_objetos;
+    
+    for (int contador = 0; contador < cantidad_objetos; contador++){
+      cin>> objetos >> posicion_x >> posicion_y;
+      cout<< objetos << posicion_x << posicion_y<<endl;
+      laberinto_modificar(posicion_x, posicion_y, objetos);
+    }
+
+    cout<<"Estoy entrando en la cantidad de movimientos";
+    cin>>cantidad_movimientos;
+
+    for(int contador = 0; contador < cantidad_movimientos; contador++){
+      cin>>movimientos;
+      movimiento_jugador(movimientos);
+    }
+
 
     return 0;
 }
-
-
