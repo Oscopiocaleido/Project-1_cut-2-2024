@@ -528,12 +528,7 @@ int main(){
 
     cout<<"Estoy entrando en la cantidad de movimientos"<<endl;
     cin>>cantidad_movimientos;
-
-    for(int contador = 0; contador < cantidad_movimientos; contador++){
-      cin>>movimientos;
-      movimiento_jugador(movimientos);
-    }
-
+    
     bool atrapado = true;
     for (int contador = 0; contador < cantidad_movimientos; contador++) {
         cin >> movimientos;
