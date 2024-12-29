@@ -3,8 +3,11 @@
 
 using namespace std;
 
-    int vida_jugador, ancho, alto, cantidad_objetos, posicion_x, posicion_y, cantidad_movimientos;
+    int vida_jugador, vida_inicial, ancho, alto, cantidad_objetos, posicion_x, posicion_y, cantidad_movimientos;
     char objetos, movimientos;
+    int x = 0, y = 0;
+    int contador_tesoros = 0, contador_trampas = 0;
+    int portal1_x = -1, portal1_y = -1, portal2_x = -1, portal2_y = -1;
 
     int m00, m01, m02, m03, m04, m05, m06, m07, m08, m09;
     int m10, m11, m12, m13, m14, m15, m16, m17, m18, m19;
@@ -18,7 +21,7 @@ using namespace std;
     int m90, m91, m92, m93, m94, m95, m96, m97, m98, m99;
 
 
-    int laberinto_acceder(int ancho, int alto){
+int laberinto_acceder(int ancho, int alto){
         if(ancho == 0 && alto == 0)
         return m00;
         if(ancho == 0 && alto == 1)
@@ -229,10 +232,10 @@ using namespace std;
         if(ancho == 9 && alto == 9)
         return m99; 
 
-      return -1;     
+      return 0;     
     }
 
-int laberinto_modificar(int i, int j, int valor_nuevo){
+void laberinto_modificar(int i, int j, int valor_nuevo){
         if(i == 0 && j == 0)
          m00 = valor_nuevo;
         if(i == 0 && j == 1)
@@ -442,67 +445,64 @@ int laberinto_modificar(int i, int j, int valor_nuevo){
          m98 = valor_nuevo;
         if(i == 9 && j == 9)
          m99 = valor_nuevo;
-      return -1;
 }
 
-int movimiento_jugador(char movimiento){
-  int x, y;
-  if(movimiento =='w'){
-    laberinto_modificar(x, y++, 1);
-         if(movimiento=='T'){
-         }
-         else if(movimiento=='X'){
-         }
-         else if(movimiento=='P'){
-         }
-         else if(movimiento=='#'){
-         }
-         else if(movimiento=='S'){
-         }
-  }
+int movimiento_jugador(char movimiento) {
+    int nuevo_x = x, nuevo_y = y;
 
-  else if(movimiento =='s'){
-    laberinto_modificar(x, y--, 1);
-         if(movimiento=='T'){
-         }
-         else if(movimiento=='X'){
-         }
-         else if(movimiento=='P'){
-         }
-         else if(movimiento=='#'){
-         }
-         else if(movimiento=='S'){
-         }
-  }
+    switch (movimiento) {
+        case 'w':
+            if (y > 0) y--;
+            break;
+        case 'a':
+            if (x > 0) x--;
+            break;
+        case 's':
+            if (y < alto - 1) y++;
+            break;
+        case 'd':
+            if (x < ancho - 1) x++;
+            break;
+        default:
+            return -1; // Movimiento inválido
+    }
 
-  else if(movimiento =='a'){
-    laberinto_modificar(x--, y, 1);         
-         if(movimiento=='T'){
-         }
-         else if(movimiento=='X'){
-         }
-         else if(movimiento=='P'){
-         }
-         else if(movimiento=='#'){
-         }
-         else if(movimiento=='S'){
-         }
-  }
+    x = nuevo_x;
+    y = nuevo_y;
 
-  else if(movimiento == 'd'){
-    laberinto_modificar(x++, y, 1);
-         if(movimiento=='T'){
-         }
-         else if(movimiento=='X'){
-         }
-         else if(movimiento=='P'){
-         }
-         else if(movimiento=='#'){
-         }
-         else if(movimiento=='S'){
-         }
-  } 
-  return -1; //indicando que el movimiento es invalido
+    char celda_actual = laberinto_acceder(nuevo_x, nuevo_y);
+    if (celda_actual == '#') {
+        cout << "Movimiento bloqueado" << endl;
+        return -1; // Movimiento bloqueado
+    }
+    if (celda_actual == 'P') {
+        if (nuevo_x == portal1_x && nuevo_y == portal1_y) {
+            nuevo_x = portal2_x;
+            nuevo_y = portal2_y;
+        } else if (nuevo_x == portal2_x && nuevo_y == portal2_y) {
+            nuevo_x = portal1_x;
+            nuevo_y = portal1_y;
+        }
+    }
+
+    x = nuevo_x;
+    y = nuevo_y;
+
+    if (celda_actual == 'T') {
+        vida_jugador = min(vida_jugador + 20, vida_inicial);
+        contador_tesoros++;
+    } 
+    else if (celda_actual == 'X') {
+        vida_jugador -= 10;
+        contador_trampas++;
+    }
+    else if(celda_actual == 'S'){
+      return 1; // Salida encontrada
+    }
+
+    laberinto_modificar(x, y, 1); // Actualizar la posición del jugador en el laberinto
+
+    return 0; // Movimiento válido
 }
 
 int main(){
@@ -514,11 +514,19 @@ int main(){
     
     for (int contador = 0; contador < cantidad_objetos; contador++){
       cin>> objetos >> posicion_x >> posicion_y;
-      cout<< objetos << posicion_x << posicion_y<<endl;
       laberinto_modificar(posicion_x, posicion_y, objetos);
+       if (objetos == 'P') {
+            if (portal1_x == -1 && portal1_y == -1) {
+                portal1_x = posicion_x;
+                portal1_y = posicion_y;
+            } else {
+                portal2_x = posicion_x;
+                portal2_y = posicion_y;
+            }
+        }
     }
 
-    cout<<"Estoy entrando en la cantidad de movimientos";
+    cout<<"Estoy entrando en la cantidad de movimientos"<<endl;
     cin>>cantidad_movimientos;
 
     for(int contador = 0; contador < cantidad_movimientos; contador++){
@@ -526,6 +534,36 @@ int main(){
       movimiento_jugador(movimientos);
     }
 
+    bool atrapado = true;
+    for (int contador = 0; contador < cantidad_movimientos; contador++) {
+        cin >> movimientos;
+        int resultado = movimiento_jugador(movimientos);
+        if (resultado == 1) {
+            atrapado = false;
+            break;
+        }
+        if (vida_jugador <= 0) {
+            atrapado = false;
+            break;
+        }
+    }
 
+    cout << "TESOROS:" << contador_tesoros << endl;
+    cout << "TRAMPAS:" << contador_trampas << endl;
+    cout << "VIDA:" << vida_jugador << endl;
+
+    if (vida_jugador <= 0) {
+        cout << "MUERTO" << endl;
+    } else if (x == ancho - 1 && y == alto - 1) {
+        if (contador_tesoros == cantidad_objetos) {
+            cout << "SORPRENDENTE" << endl;
+        } else {
+            cout << "LOGRADO" << endl;
+        }
+    } else if (atrapado) {
+        cout << "ATRAPADO" << endl;
+    } else {
+        cout << "LOGRADO" << endl;
+    }
     return 0;
 }
