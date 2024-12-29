@@ -235,7 +235,7 @@ int laberinto_acceder(int ancho, int alto){
       return 0;     
     }
 
-void laberinto_modificar(int i, int j, int valor_nuevo){
+int laberinto_modificar(int i, int j, int valor_nuevo){
         if(i == 0 && j == 0)
          m00 = valor_nuevo;
         if(i == 0 && j == 1)
@@ -452,16 +452,16 @@ int movimiento_jugador(char movimiento) {
 
     switch (movimiento) {
         case 'w':
-            if (y > 0) y--;
+            if (y > 0) y--;//Mover hacia arriba
             break;
         case 'a':
-            if (x > 0) x--;
+            if (x > 0) x--;//Mover a la izquierda
             break;
         case 's':
-            if (y < alto - 1) y++;
+            if (y < alto - 1) y++;//Mover hacia abajo
             break;
         case 'd':
-            if (x < ancho - 1) x++;
+            if (x < ancho - 1) x++;//Mover a la derecha
             break;
         default:
             return -1; // Movimiento inválido
@@ -530,6 +530,7 @@ int main(){
     cin>>cantidad_movimientos;
     
     bool atrapado = true;
+    
     for (int contador = 0; contador < cantidad_movimientos; contador++) {
         cin >> movimientos;
         int resultado = movimiento_jugador(movimientos);
